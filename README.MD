@@ -191,3 +191,16 @@ server.use(cors({
             }
         };
 ```
+
+### CREAZIONE E ACCESSO FILE DB
+
+Creiamo la cartella ***"data"*** e dentro di essa il file ***"database.db"***
+
+```js
+// Dichiarazione e Creazione Database
+const sqlite3 = require('sqlite3').verbose();
+const dbPath = path.resolve(__dirname, "../data/database.db")
+const db = new sqlite3.Database(dbPath);
+```
+
+Usiamo ***dbPath*** così da non avere problemi coi percorsi assoluti.

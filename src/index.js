@@ -1,11 +1,12 @@
 const express = require("express");
-
+const path = require('path'); // Aggiungi questa riga all'inizio del file
 const server = express();
 const port = 3000;
 
-/*// Dichiarazione e Creazione Database
+// Dichiarazione e Creazione Database
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('data/database.db');*/
+const dbPath = path.resolve(__dirname, "../data/database.db")
+const db = new sqlite3.Database(dbPath);
 
 // Aggiungi CORS per permettere richieste dal tuo form HTML
 const cors = require('cors');
@@ -22,7 +23,6 @@ const dotenv = require('dotenv');
 server.use(express.json());
 dotenv.config();
 
-const path = require('path'); // Aggiungi questa riga all'inizio del file
 const { attachment } = require("express/lib/response");
 
 // Configura la cartella json per servire file statici
