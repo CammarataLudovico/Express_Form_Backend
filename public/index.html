@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Registrazione Utente</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        padding: 30px;
+      }
+      .form-control:invalid,
+      .form-select:invalid {
+        box-shadow: none;
+      }
+      #loadingOverlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+      .spinner-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Overlay di caricamento -->
+    <div id="loadingOverlay">
+      <div class="spinner-container">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Caricamento...</span>
+        </div>
+        <p class="mt-2">Invio in corso...</p>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2 class="mb-4">Registrazione Utente</h2>
+      <form id="userForm" novalidate>
+        <div class="mb-3">
+          <label for="nome" class="form-label">Nome</label>
+          <input
+            type="text"
+            class="form-control"
+            id="nome"
+            maxlength="30"
+            required
+          />
+          <div class="invalid-feedback">
+            Inserisci un nome valido (solo lettere, 2-30 caratteri).
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="cognome" class="form-label">Cognome</label>
+          <input
+            type="text"
+            class="form-control"
+            id="cognome"
+            maxlength="30"
+            required
+          />
+          <div class="invalid-feedback">
+            Inserisci un cognome valido (solo lettere, 2-30 caratteri).
+          </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="indirizzo" class="form-label">Indirizzo</label>
+            <input
+              type="text"
+              class="form-control"
+              id="indirizzo"
+              maxlength="50"
+              required
+            />
+            <div class="invalid-feedback">
+              Inserisci un indirizzo valido (5-50 caratteri).
+            </div>
+          </div>
+
+        <div class="mb-3">
+          <label for="cf" class="form-label">Codice Fiscale</label>
+          <input
+            type="text"
+            class="form-control"
+            id="cf"
+            maxlength="16"
+            required
+          />
+          <div class="invalid-feedback">
+            Codice fiscale non valido (es. RSSMRA85M01H501U).
+          </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="cellulare" class="form-label">Cellulare</label>
+            <input
+              type="text"
+              class="form-control"
+              id="cellulare"
+              maxlength="10"
+              required
+            />
+            <div class="invalid-feedback">
+              Inserisci un numero di cellulare valido (10 cifre).
+            </div>
+          </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            maxlength="40"
+            required
+          />
+          <div class="invalid-feedback">Email non valida.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="oggetto" class="form-label">Oggetto</label>
+          <input
+            type="oggetto"
+            class="form-control"
+            id="oggetto"
+            maxlength="40"
+            required
+          />
+          <div class="invalid-feedback">Almeno 5 caratteri.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="messaggio" class="form-label">Messaggio</label>
+          <textarea
+            class="form-control"
+            id="messaggio"
+            rows="4"
+            maxlength="240"
+            required
+          ></textarea>
+          <div class="invalid-feedback">Almeno 10 caratteri.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="provincia" class="form-label">Provincia</label>
+          <select class="form-select" id="provincia" required>
+            <option value="" selected disabled>Seleziona la provincia</option>
+          </select>
+          <div class="invalid-feedback">Seleziona una provincia valida.</div>
+        </div>
+
+        <div class="mb-3" id="comuneContainer">
+            <label for="comune" class="form-label">Comune</label>
+            <select class="form-select" id="comune" required>
+              <option value="" selected disabled>Seleziona il comune</option>
+            </select>
+            <div class="invalid-feedback">Seleziona un comune valido.</div>
+          </div>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+          Invia
+        </button>
+      </form>
+    </div>
+
+    <script>
+      const form = document.getElementById("userForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const comuneSelect = document.getElementById("comune");
+      const comuneContainer = document.getElementById("comuneContainer");
+      const loadingOverlay = document.getElementById("loadingOverlay");
+      
+      // Variabile globale per memorizzare tutti i comuni
+      let tuttiIComuni = [];
+      
+      // URL del tuo server Express
+      const SERVER_URL = "http://localhost:3000/form-data"; // Cambia con l'URL del tuo server se necessario
+
+      // un oggetto campi che contengono le regex per validare i campi
+      const campi = {
+        nome: { regex: /^[a-zA-Zàèéìòù' ]{2,30}$/ },
+        cognome: { regex: /^[a-zA-Zàèéìòù' ]{2,30}$/ },
+        cellulare: { regex: /^\d{10}$/ },
+        indirizzo: { regex: /^[\w\s.,àèéìòù-]{5,50}$/ },
+        oggetto: { regex: /^[a-zA-Zàèéìòù' ]{5,120}$/ },
+        messaggio: { regex: /^[a-zA-Zàèéìòù' ]{10,240}$/ },
+        cf: {
+          // $/i  ingnore case
+          regex: /^[A-Z]{6}[0-9]{2}[A-EHLMPR-T][0-9]{2}[A-Z][0-9]{3}[A-Z]$/i,
+        },
+        email: { regex: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/ },
+      };
+
+      function sanitize(input) {
+        return input.replace(/<[^>]*>/g, "").trim();
+      }
+
+      function validateCampo(id) {
+        const input = document.getElementById(id);
+        const cleanedValue = sanitize(input.value);
+        const { regex } = campi[id];
+
+        if (!regex.test(cleanedValue)) {
+          input.classList.add("is-invalid");
+          input.classList.remove("is-valid");
+          return false;
+        } else {
+          input.classList.remove("is-invalid");
+          input.classList.add("is-valid");
+          return true;
+        }
+      }
+
+      function validateProvincia() {
+        const select = document.getElementById("provincia");
+        if (!select.value) {
+          select.classList.add("is-invalid");
+          select.classList.remove("is-valid");
+          return false;
+        } else {
+          select.classList.remove("is-invalid");
+          select.classList.add("is-valid");
+          return true;
+        }
+      }
+      
+      function validateComune() {
+        if (comuneSelect.style.display === "none") {
+          return true;
+        }
+        
+        if (!comuneSelect.value) {
+          comuneSelect.classList.add("is-invalid");
+          comuneSelect.classList.remove("is-valid");
+          return false;
+        } else {
+          comuneSelect.classList.remove("is-invalid");
+          comuneSelect.classList.add("is-valid");
+          return true;
+        }
+      }
+
+      function checkFormValid() {
+        const validCampi = Object.keys(campi).every((id) => validateCampo(id));
+        const validProv = validateProvincia();
+        const validComune = validateComune();
+        submitBtn.disabled = !(validCampi && validProv && validComune);
+      }
+      
+      // Funzione per mostrare/nascondere l'overlay di caricamento
+      function toggleLoading(show) {
+        loadingOverlay.style.display = show ? "flex" : "none";
+      }
+      
+      // Funzione per inviare i dati del form al server Express
+      async function inviaAlServer(datiForm) {
+        try {
+          toggleLoading(true); // Mostra l'overlay di caricamento
+          
+          const response = await fetch(SERVER_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(datiForm),
+          });
+          
+          toggleLoading(false); // Nascondi l'overlay di caricamento
+          
+          if (!response.ok) {
+            throw new Error(`Errore HTTP: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          console.log('Risposta dal server:', data);
+          
+          return data.success;
+        } catch (error) {
+          toggleLoading(false); // Nascondi l'overlay di caricamento in caso di errore
+          console.error('Errore durante l\'invio al server:', error);
+          return false;
+        }
+      }
+
+      Object.keys(campi).forEach((id) => {
+        const input = document.getElementById(id);
+        input.addEventListener("input", () => {
+          validateCampo(id);
+          checkFormValid();
+        });
+      });
+
+      document.getElementById("provincia").addEventListener("change", (e) => {
+        validateProvincia();
+        
+        const provinciaSelezionata = e.target.value;
+        
+        // Rimuovi tutte le opzioni esistenti tranne la prima
+        while (comuneSelect.options.length > 1) {
+          comuneSelect.remove(1);
+        }
+        
+        // Reset della validazione
+        comuneSelect.classList.remove("is-valid", "is-invalid");
+        
+        if (provinciaSelezionata) {
+          // Filtra i comuni per la provincia selezionata
+          const comuniFiltrati = tuttiIComuni.filter(comune => 
+            comune.sigla_provincia === provinciaSelezionata
+          );
+          
+          if (comuniFiltrati.length > 0) {
+            // Popola il select dei comuni
+            comuniFiltrati.forEach(comune => {
+              const option = document.createElement("option");
+              option.value = comune.codice_istat; // Usa codice_istat come valore
+              option.textContent = comune.denominazione_ita;
+              option.dataset.nome = comune.denominazione_ita; // Salva il nome per riferimento futuro
+              comuneSelect.appendChild(option);
+            });
+            
+            // Mostra il select dei comuni
+            comuneSelect.style.display = "block";
+          } else {
+            console.error("Nessun comune trovato per la provincia:", provinciaSelezionata);
+            // Aggiungi un'opzione di fallback
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "Nessun comune disponibile";
+            comuneSelect.appendChild(option);
+          }
+        } else {
+          // Nascondi il select dei comuni
+          comuneSelect.style.display = "none";
+        }
+        
+        checkFormValid();
+      });
+      
+      comuneSelect.addEventListener("change", () => {
+        validateComune();
+        checkFormValid();
+      });
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        // Raccogli i dati del form
+        const datiForm = {};
+        
+        // Raccogli i dati dai campi di input
+        Object.keys(campi).forEach((id) => {
+          const input = document.getElementById(id);
+          datiForm[id] = sanitize(input.value);
+        });
+        
+        // Aggiungi provincia e comune
+        datiForm.provincia = document.getElementById("provincia").value;
+        datiForm.comune_codice = comuneSelect.value;
+        
+        // Ottieni il nome del comune selezionato
+        const comuneOption = comuneSelect.options[comuneSelect.selectedIndex];
+        datiForm.comune_nome = comuneOption ? comuneOption.textContent : "";
+        
+        console.log("Dati form raccolti:", datiForm);
+        
+        // Invia i dati al server
+        const invioRiuscito = await inviaAlServer(datiForm);
+        
+        if (invioRiuscito) {
+          alert("Registrazione completata con successo! I dati sono stati inviati.");
+        } else {
+          alert("C'è stato un problema nell'invio dei dati. Riprova più tardi.");
+        }
+        
+        // Reset del form
+        form.reset();
+        submitBtn.disabled = true;
+        comuneSelect.style.display = "none";
+
+        document
+          .querySelectorAll(".is-valid, .is-invalid")
+          .forEach((el) => el.classList.remove("is-valid", "is-invalid"));
+      });
+
+      // Popola la select province da JSON esterno
+      fetch("../json/province.json")
+        .then((response) => response.json())
+        .then((province) => {
+          const select = document.getElementById("provincia");
+          province.forEach((sigla) => {
+            const option = document.createElement("option");
+            option.value = sigla;
+            option.textContent = sigla;
+            select.appendChild(option);
+          });
+        })
+        .catch((error) => {
+          console.error("Errore nel caricamento province:", error);
+        });
+
+      // Carica tutti i comuni all'avvio
+      fetch("../json/gi_comuni.json")
+        .then((response) => response.json())
+        .then((comuni) => {
+          tuttiIComuni = comuni;
+          console.log("Comuni caricati:", tuttiIComuni.length);
+          
+          // Nascondi inizialmente il select dei comuni
+          comuneSelect.style.display = "none";
+        })
+        .catch((error) => {
+          console.error("Errore nel caricamento dei comuni:", error);
+        });
+    </script>
+  </body>
+</html>
