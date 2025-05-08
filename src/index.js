@@ -3,6 +3,10 @@ const express = require("express");
 const server = express();
 const port = 3000;
 
+/*// Dichiarazione e Creazione Database
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('data/database.db');*/
+
 // Aggiungi CORS per permettere richieste dal tuo form HTML
 const cors = require('cors');
 
@@ -35,7 +39,7 @@ server.post('/form-data', async (req, res) => {
         
         const mailOptions = {
             from: process.env.SMTP_MAIL,
-            to: '',
+            to: 'ludovico.cammarata.24@stud.itsaltoadriatico.it',
             subject: `${req.body.oggetto}`,
             html: `
                 <h2>📝 Contatto Utente 📝</h2>

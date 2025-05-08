@@ -8,13 +8,144 @@
       rel="stylesheet"
     />
     <style>
-      body {
-        padding: 30px;
+      /* Stili di base */
+      :root {
+        --primary-color: #4361ee;
+        --primary-hover: #3a56d4;
+        --success-color: #2ecc71;
+        --error-color: #e74c3c;
+        --text-color: #333;
+        --light-bg: #f8f9fa;
+        --border-color: #dee2e6;
+        --border-radius: 8px;
+        --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
       }
+
+      body {
+        padding: 0;
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text-color);
+        background-color: #f5f7fa;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+      }
+
+      /* Titolo del form */
+      h2 {
+        color: var(--primary-color);
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--border-color);
+        font-weight: 600;
+      }
+
+      /* Stili per i campi del form */
+      .form-label {
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: #555;
+      }
+
+      .form-control,
+      .form-select {
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 12px 15px;
+        transition: var(--transition);
+        box-shadow: none;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+      }
+
       .form-control:invalid,
       .form-select:invalid {
         box-shadow: none;
       }
+
+      /* Stili per i campi validi/invalidi */
+      .form-control.is-valid,
+      .form-select.is-valid {
+        border-color: var(--success-color);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%232ecc71' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        padding-right: calc(1.5em + 0.75rem);
+      }
+
+      .form-control.is-invalid,
+      .form-select.is-invalid {
+        border-color: var(--error-color);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23e74c3c'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23e74c3c' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        padding-right: calc(1.5em + 0.75rem);
+      }
+
+      .invalid-feedback {
+        color: var(--error-color);
+        font-size: 0.85rem;
+        margin-top: 5px;
+      }
+
+      .error-message {
+        display: none;
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      /* Stili per il pulsante */
+      .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        border-radius: var(--border-radius);
+        padding: 12px 25px;
+        font-weight: 500;
+        transition: var(--transition);
+        margin-top: 10px;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(67, 97, 238, 0.2);
+      }
+
+      .btn-primary:disabled {
+        background-color: #a8b1f0;
+        border-color: #a8b1f0;
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+
+      /* Stili per il textarea */
+      textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      /* Overlay di caricamento */
       #loadingOverlay {
         display: none;
         position: fixed;
@@ -22,16 +153,93 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.6);
         z-index: 1000;
         justify-content: center;
         align-items: center;
+        backdrop-filter: blur(3px);
       }
+
       .spinner-container {
         background-color: white;
-        padding: 20px;
-        border-radius: 5px;
+        padding: 25px 40px;
+        border-radius: var(--border-radius);
         text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.3s ease;
+      }
+
+      .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        border-width: 0.25rem;
+      }
+
+      /* Layout responsivo */
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+          margin: 20px;
+        }
+        
+        .form-control,
+        .form-select,
+        .btn-primary {
+          padding: 10px;
+        }
+      }
+
+      /* Animazioni */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Stili per i gruppi di campi */
+      .mb-3 {
+        margin-bottom: 1.5rem !important;
+        position: relative;
+      }
+
+      /* Effetto hover sui campi */
+      .form-control:hover:not(:focus):not(.is-invalid):not(.is-valid),
+      .form-select:hover:not(:focus):not(.is-invalid):not(.is-valid) {
+        border-color: #adb5bd;
+      }
+
+      /* Stile per il focus sui label */
+      .form-control:focus + .form-label,
+      .form-select:focus + .form-label {
+        color: var(--primary-color);
+      }
+
+      /* Stili per il campo data */
+      input[type="date"].form-control {
+        padding: 0.375rem 0.75rem;
+        height: calc(1.5em + 0.75rem + 2px);
+      }
+
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 0.6;
+        filter: invert(0.5);
+        transition: var(--transition);
+      }
+
+      input[type="date"]::-webkit-calendar-picker-indicator:hover {
+        opacity: 1;
+        filter: invert(0.7);
+      }
+
+      /* Stile per il placeholder della data */
+      input[type="date"]:invalid::-webkit-datetime-edit {
+        color: #6c757d;
       }
     </style>
   </head>
@@ -74,6 +282,23 @@
           />
           <div class="invalid-feedback">
             Inserisci un cognome valido (solo lettere, 2-30 caratteri).
+          </div>
+        </div>
+
+        <!-- Nuovo campo data di nascita -->
+        <div class="mb-3">
+          <label for="data_nascita" class="form-label">Data di Nascita</label>
+          <div class="date-picker-container">
+            <input
+              type="date"
+              class="form-control"
+              id="data_nascita"
+              required
+            />
+            <span class="age-indicator" id="ageIndicator"></span>
+          </div>
+          <div class="error-message" id="dataNascitaError">
+            Devi avere almeno 18 anni per registrarti.
           </div>
         </div>
 
@@ -125,7 +350,7 @@
             type="email"
             class="form-control"
             id="email"
-            maxlength="40"
+            maxlength="80"
             required
           />
           <div class="invalid-feedback">Email non valida.</div>
@@ -183,6 +408,9 @@
       const comuneSelect = document.getElementById("comune");
       const comuneContainer = document.getElementById("comuneContainer");
       const loadingOverlay = document.getElementById("loadingOverlay");
+      const dataNascitaInput = document.getElementById("data_nascita");
+      const ageIndicator = document.getElementById("ageIndicator");
+      const dataNascitaError = document.getElementById("dataNascitaError");
       
       // Variabile globale per memorizzare tutti i comuni
       let tuttiIComuni = [];
@@ -194,6 +422,7 @@
       const campi = {
         nome: { regex: /^[a-zA-Zàèéìòù' ]{2,30}$/ },
         cognome: { regex: /^[a-zA-Zàèéìòù' ]{2,30}$/ },
+        data_nascita: { customValidation: true }, // Nuovo campo con validazione personalizzata
         cellulare: { regex: /^\d{10}$/ },
         indirizzo: { regex: /^[\w\s.,àèéìòù-]{5,50}$/ },
         oggetto: { regex: /^[a-zA-Zàèéìòù' ]{5,120}$/ },
@@ -209,7 +438,59 @@
         return input.replace(/<[^>]*>/g, "").trim();
       }
 
+      // Funzione per validare la data di nascita
+      function validateDataNascita() {
+        const dataNascita = new Date(dataNascitaInput.value);
+        const oggi = new Date();
+
+        if (!dataNascitaInput.value) {
+          dataNascitaError.classList.remove("show");
+          return true; // Considera valido se non è stato ancora compilato
+        }
+        
+        // Calcola l'età
+        let eta = oggi.getFullYear() - dataNascita.getFullYear();
+        const m = oggi.getMonth() - dataNascita.getMonth();
+        if (m < 0 || (m === 0 && oggi.getDate() < dataNascita.getDate())) {
+          eta--;
+        }
+        
+        // Aggiorna l'indicatore di età
+        if (!isNaN(dataNascita.getTime())) {
+          ageIndicator.textContent = `${eta} anni`;
+          
+          if (eta >= 18) {
+            ageIndicator.classList.add('valid');
+            ageIndicator.classList.remove('invalid');
+          } else {
+            ageIndicator.classList.add('invalid');
+            ageIndicator.classList.remove('valid');
+          }
+        } else {
+          ageIndicator.textContent = '';
+        }
+        
+        // Verifica se la data è valida e se l'utente ha almeno 18 anni
+        const isValid = !isNaN(dataNascita.getTime()) && eta >= 18;
+        
+        if (!isValid) {
+          dataNascitaInput.classList.add("is-invalid");
+          dataNascitaInput.classList.remove("is-valid");
+          dataNascitaError.classList.add("show"); // Mostra il messaggio di errore
+          return false;
+        } else {
+          dataNascitaInput.classList.remove("is-invalid");
+          dataNascitaInput.classList.add("is-valid");
+          dataNascitaError.classList.remove("show"); // Nascondi il messaggio di errore
+          return true;
+        }};
+
       function validateCampo(id) {
+        // Gestione speciale per la data di nascita
+        if (id === "data_nascita") {
+          return validateDataNascita();
+        }
+        
         const input = document.getElementById(id);
         const cleanedValue = sanitize(input.value);
         const { regex } = campi[id];
@@ -296,12 +577,20 @@
         }
       }
 
+      // Aggiungi event listener per il campo data di nascita
+      dataNascitaInput.addEventListener("change", () => {
+        validateDataNascita();
+        checkFormValid();
+      });
+
       Object.keys(campi).forEach((id) => {
-        const input = document.getElementById(id);
-        input.addEventListener("input", () => {
-          validateCampo(id);
-          checkFormValid();
-        });
+        if (id !== "data_nascita") { // Escludiamo data_nascita perché ha già il suo listener
+          const input = document.getElementById(id);
+          input.addEventListener("input", () => {
+            validateCampo(id);
+            checkFormValid();
+          });
+        }
       });
 
       document.getElementById("provincia").addEventListener("change", (e) => {
@@ -364,9 +653,14 @@
         
         // Raccogli i dati dai campi di input
         Object.keys(campi).forEach((id) => {
-          const input = document.getElementById(id);
-          datiForm[id] = sanitize(input.value);
+          if (id !== "data_nascita") { // Gestiamo la data separatamente
+            const input = document.getElementById(id);
+            datiForm[id] = sanitize(input.value);
+          }
         });
+        
+        // Aggiungi la data di nascita
+        datiForm.data_nascita = dataNascitaInput.value;
         
         // Aggiungi provincia e comune
         datiForm.provincia = document.getElementById("provincia").value;
@@ -391,6 +685,8 @@
         form.reset();
         submitBtn.disabled = true;
         comuneSelect.style.display = "none";
+        ageIndicator.textContent = ""; // Resetta l'indicatore di età
+        dataNascitaError.classList.remove("show"); // Nascondi il messaggio di errore
 
         document
           .querySelectorAll(".is-valid, .is-invalid")
@@ -426,6 +722,26 @@
         .catch((error) => {
           console.error("Errore nel caricamento dei comuni:", error);
         });
+        
+      // Imposta la data massima al giorno corrente
+      const oggi = new Date();
+      const annoMinimo = oggi.getFullYear() - 100; // Limita a 100 anni fa
+      const annoMassimo = oggi.getFullYear() - 18; // Limita a 18 anni fa
+      
+      const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      
+      // Imposta i limiti di data
+      dataNascitaInput.setAttribute('max', formatDate(new Date(annoMassimo, oggi.getMonth(), oggi.getDate())));
+      dataNascitaInput.setAttribute('min', formatDate(new Date(annoMinimo, 0, 1)));
+      
+      // Imposta una data predefinita (18 anni fa)
+      // dataNascitaInput.value = formatDate(new Date(annoMassimo, oggi.getMonth(), oggi.getDate()));
+      validateDataNascita(); // Valida la data iniziale
     </script>
   </body>
 </html>
