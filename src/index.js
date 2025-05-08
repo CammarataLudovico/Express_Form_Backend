@@ -33,6 +33,31 @@ server.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
   });
 
+const transporter = nodemailer.createTransport({
+    service: process.env.SMTP_SERVICE,
+    auth: {
+        user: process.env.SMTP_MAIL,
+        pass: process.env.SMTP_PASS
+    }
+}); 
+
+transporter.verify((error, success) => {
+    if (error) {
+        console.log('Errore nella connessione SMTP:', error);
+    } else {
+        console.log('Connessione SMTP riuscita!');
+    }
+});
+
+
+// DA FINIRE, PERCHè MANDA IN CRASH IL PROGRAMMA
+/*db.run(saveDataSQL, params, function (err) {
+        if (err) {
+            console.log(err)
+            return res.status(500).send("Errore nel salvataggio dei dati nel DB")
+        }
+    });*/
+
 // NUOVO ENDPOINT: Chiamata POST per il form di registrazione utente
 server.post('/form-data', async (req, res) => {
     try {
@@ -75,19 +100,21 @@ server.post('/form-data', async (req, res) => {
             messaggio,
             provincia,
             comune_nome
-        ] = req.body;
+        ];
 
         // Andiamo a salvare i dati nel db
 
         const saveDataSQL = `
             INSERT INTO contatti (
-                contact_id, nome, cognome, data_nascita, indirizzo, codice_fiscale, cellulare, email, oggetto_mail, messaggio_mail, provincia, comune)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)  
+                INSERT INTO contatti (
+                    nome, cognome, data_nascita, indirizzo, codice_fiscale, cellulare, email, oggetto_mail, messaggio_mail, provincia, comune
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  
             `;
         
         const mailOptions = {
             from: process.env.SMTP_MAIL,
-            to: 'samuele.drigo.24@stud.itsaltoadriatico.it',
+            to: 'x',
             subject: `${req.body.oggetto}`,
             html: `
                 <h2>📝 Contatto Utente 📝</h2>
@@ -106,11 +133,11 @@ server.post('/form-data', async (req, res) => {
             `,
 
             // Aggiunta allegati 
-
+             /*
             attachments: {
                 filename: 'test.jpg',
                 path: path.join(__dirname, '../assets', 'test.jpg' )
-            }
+            }*/
         };
         
 
@@ -148,23 +175,6 @@ db.serialize(() => {
         comune TEXT NOT NULL
     )`);
     console.log("Tutto ok")
-});
-
-
-const transporter = nodemailer.createTransport({
-    service: process.env.SMTP_SERVICE,
-    auth: {
-        user: process.env.SMTP_MAIL,
-        pass: process.env.SMTP_PASS
-    }
-}); 
-
-transporter.verify((error, success) => {
-    if (error) {
-        console.log('Errore nella connessione SMTP:', error);
-    } else {
-        console.log('Connessione SMTP riuscita!');
-    }
 });
 
 
