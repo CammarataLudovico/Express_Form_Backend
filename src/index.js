@@ -37,6 +37,30 @@ server.get('/', (req, res) => {
 server.post('/form-data', async (req, res) => {
     try {
         console.log('Dati form ricevuti:', req.body);
+
+        /* Destrutturazione variabili, è uguale a scrivere:
+            -const nome = req.body.nome
+            -const cognome = req.body.cognome
+        */
+        const {
+            nome,
+            cognome,
+            cellulare,
+            data_nascita,
+            indirizzo,
+            cf,
+            email,
+            oggetto,
+            messaggio,
+            provincia,
+            comune_nome
+        } = req.body;
+
+        const saveDataSQL = `
+              INSERT INTO contatti (
+                
+              )  
+            `;
         
         const mailOptions = {
             from: process.env.SMTP_MAIL,
