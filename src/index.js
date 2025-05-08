@@ -23,6 +23,15 @@ const mailOptions = {
     text: 'Hello, this is a test email sent using Nodemailer and Gmail.'
 };
 
+transporter.verify((error, success) => {
+    if (error) {
+        console.log('Errore nella connessione SMTP:', error);
+    } else {
+        console.log('Connessione SMTP riuscita!');
+    }
+});
+
+
 transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
         return console.log('Error sending email: ', error);
