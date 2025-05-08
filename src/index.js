@@ -56,10 +56,33 @@ server.post('/form-data', async (req, res) => {
             comune_nome
         } = req.body;
 
+        /*
+            Ora andremo ad eseguire un passaggio per evitare SQL Injection, andiamo a salvare i paramentri in un array,
+            con i loro valori reali, ma una volta che andremo ad eseguire query, sqlite trasformerà queste variabili
+            in "?", dei placeholder, così non rischiamo che un utente malintenzionato
+            possa iniettare del codice SQL malevolo nei dati del form.
+        */
+
+        const params = [
+            nome,
+            cognome,
+            cellulare,
+            data_nascita,
+            indirizzo,
+            cf,
+            email,
+            oggetto,
+            messaggio,
+            provincia,
+            comune_nome
+        ] = req.body;
+
+        // Andiamo a salvare i dati nel db
+
         const saveDataSQL = `
-              INSERT INTO contatti (
-                
-              )  
+            INSERT INTO contatti (
+                contact_id, nome, cognome, data_nascita, indirizzo, codice_fiscale, cellulare, email, oggetto_mail, messaggio_mail, provincia, comune)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)  
             `;
         
         const mailOptions = {
