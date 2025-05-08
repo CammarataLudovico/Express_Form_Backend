@@ -166,7 +166,8 @@ const mailOptions = {
 
 ### CONFIGURAZIONE CORS
 
-Per poter inviare richieste dai file HTML, dobbiamo installare e configurare CORS
+Per poter inviare richieste dai file HTML, dobbiamo installare e configurare CORS.
+Andiamo ad inserirlo all'inizio del nostro codice, fuori dal transponder.
 
 ```js
 // Aggiungi CORS per permettere richieste dal tuo form HTML
@@ -204,3 +205,32 @@ const db = new sqlite3.Database(dbPath);
 ```
 
 Usiamo ***dbPath*** così da non avere problemi coi percorsi assoluti.
+
+### CREAZIONE TABELLE DATABASE ###
+
+Ci appoggiaremo ad un file ***database.db*** creato in precendenza, in esso andremo a creare le varie tabelle con il codice qui sotto:
+
+```js
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS contatti (
+        contact_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        cognome TEXT NOT NULL,
+        data_nascita TEXT NOT NULL,
+        indirizzo TEXT NOT NULL,
+        codice_fiscale TEXT NOT NULL,
+        cellulare INTEGER NOT NULL,
+        email TEXT NOT NULL,
+        oggetto_mail TEXT NOT NULL,
+        messaggio_mail TEXT NOT NULL,
+        provincia TEXT NOT NULL,
+        comune TEXT NOT NULL
+    )`);
+    // console.log per essere sicuri
+    console.log("Tutto ok")
+});
+```
+
+Con questo codice il nostro file sarà popolato dalle varie tabelle definite, con tutti gli attributi richiesti.
+
+***Attenzione: se nel file non vengono create correttamente le tabelle, stoppare il server, finire di scrivere tutto questo codice, cancellare il file database.db corrente e far ripartire il server, così la creazione non avrà problemi di alcuna sorta.***

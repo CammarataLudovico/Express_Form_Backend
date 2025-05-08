@@ -84,6 +84,25 @@ server.post('/form-data', async (req, res) => {
     }
 });
 
+db.serialize(() => {
+    // da finire
+    db.run(`CREATE TABLE IF NOT EXISTS contatti (
+        contact_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        cognome TEXT NOT NULL,
+        data_nascita TEXT NOT NULL,
+        indirizzo TEXT NOT NULL,
+        codice_fiscale TEXT NOT NULL,
+        cellulare INTEGER NOT NULL,
+        email TEXT NOT NULL,
+        oggetto_mail TEXT NOT NULL,
+        messaggio_mail TEXT NOT NULL,
+        provincia TEXT NOT NULL,
+        comune TEXT NOT NULL
+    )`);
+    console.log("Tutto ok")
+});
+
 
 const transporter = nodemailer.createTransport({
     service: process.env.SMTP_SERVICE,
