@@ -1,0 +1,23 @@
+{
+  "name": "express_form_backend",
+  "version": "0.0.1",
+  "description": "Backend to send mail with Express connected to a HTML Frontend",
+  "homepage": "https://github.com/CammarataLudovico/Express_Form_Backend#readme",
+  "bugs": {
+    "url": "https://github.com/CammarataLudovico/Express_Form_Backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CammarataLudovico/Express_Form_Backend.git"
+  },
+  "license": "ISC",
+  "author": "Ludovico Cammarata",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
