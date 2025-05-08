@@ -234,3 +234,59 @@ db.serialize(() => {
 Con questo codice il nostro file sarà popolato dalle varie tabelle definite, con tutti gli attributi richiesti.
 
 ***Attenzione: se nel file non vengono create correttamente le tabelle, stoppare il server, finire di scrivere tutto questo codice, cancellare il file database.db corrente e far ripartire il server, così la creazione non avrà problemi di alcuna sorta.***
+
+### DESTRUTTURAZIONE VARIABILI PER PASSAGGIO AL DATABASE ###
+
+Ora andremo ad eseguire una **destrutturazione** delle variabili che ci servano da passare al nostro database, in una maniera molto semplice e veloce, che ci farà risparmiare molto tempo.
+
+```js
+    /* Destrutturazione variabili, è uguale a scrivere:
+        -const nome = req.body.nome
+        -const cognome = req.body.cognome
+    */
+   const {
+            nome,
+            cognome,
+            cellulare,
+            data_nascita,
+            indirizzo,
+            cf,
+            email,
+            oggetto,
+            messaggio,
+            provincia,
+            comune_nome
+        } = req.body;
+```
+
+### EVITIAMO LE SQL INJECTION! ###
+
+Ora andremo ad eseguire un passaggio per evitare **SQL Injection**, andiamo a salvare i paramentri in un **array**, con i loro valori reali, ma una volta che andremo ad eseguire query, sqlite trasformerà queste variabili in "?", dei **placeholder**, così non rischiamo che un utente malintenzionato, possa iniettare del codice SQL malevolo nei dati del form.
+
+```js
+const params = [
+            nome,
+            cognome,
+            cellulare,
+            data_nascita,
+            indirizzo,
+            cf,
+            email,
+            oggetto,
+            messaggio,
+            provincia,
+            comune_nome
+        ] = req.body;
+```
+
+### SALVATAGGIO DATI DENTRO IL DATABASE ###
+
+Ora andiamo a creare la funzione di salvataggio vero e proprio dei nostri dati all'interno del nostro database.
+
+```js
+const saveDataSQL = `
+            INSERT INTO contatti (
+                contact_id, nome, cognome, data_nascita, indirizzo, codice_fiscale, cellulare, email, oggetto_mail, messaggio_mail, provincia, comune)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)  
+            `;
+```
