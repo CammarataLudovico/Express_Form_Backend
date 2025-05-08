@@ -23,6 +23,7 @@ server.use(express.json());
 dotenv.config();
 
 const path = require('path'); // Aggiungi questa riga all'inizio del file
+const { attachment } = require("express/lib/response");
 
 // Configura la cartella json per servire file statici
 server.use('/json', express.static(path.join(__dirname, '../json')));
@@ -39,7 +40,7 @@ server.post('/form-data', async (req, res) => {
         
         const mailOptions = {
             from: process.env.SMTP_MAIL,
-            to: 'ludovico.cammarata.24@stud.itsaltoadriatico.it',
+            to: 'samuele.drigo.24@stud.itsaltoadriatico.it',
             subject: `${req.body.oggetto}`,
             html: `
                 <h2>📝 Contatto Utente 📝</h2>
@@ -47,6 +48,7 @@ server.post('/form-data', async (req, res) => {
                 <p><strong>👤 Nome:</strong> ${req.body.nome}</p>
                 <p><strong>👤 Cognome:</strong> ${req.body.cognome}</p>
                 <p><strong>📱 Cellulare:</strong> ${req.body.cellulare}</p>
+                <p><strong>👤 Età: </strong> ${req.body.data_nascita} </p>
                 <p><strong>🏠 Indirizzo:</strong> ${req.body.indirizzo}</p>
                 <p><strong>🆔 Codice Fiscale:</strong> ${req.body.cf}</p>
                 <p><strong>📧 Email:</strong> ${req.body.email}</p>
@@ -54,7 +56,14 @@ server.post('/form-data', async (req, res) => {
                 <p><strong>📧 Messaggio:</strong> ${req.body.messaggio}</p>
                 <p><strong>🏙️ Provincia:</strong> ${req.body.provincia}</p>
                 <p><strong>🏙️ Comune:</strong> ${req.body.comune_nome}</p>
-            `
+            `,
+
+            // Aggiunta allegati 
+
+            attachments: {
+                filename: 'test.jpg',
+                path: path.join(__dirname, '../assets', 'test.jpg' )
+            }
         };
         
 
