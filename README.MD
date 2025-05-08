@@ -276,7 +276,7 @@ const params = [
             messaggio,
             provincia,
             comune_nome
-        ] = req.body;
+        ];
 ```
 
 ### SALVATAGGIO DATI DENTRO IL DATABASE ###
@@ -286,7 +286,8 @@ Ora andiamo a creare la funzione di salvataggio vero e proprio dei nostri dati a
 ```js
 const saveDataSQL = `
             INSERT INTO contatti (
-                contact_id, nome, cognome, data_nascita, indirizzo, codice_fiscale, cellulare, email, oggetto_mail, messaggio_mail, provincia, comune)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)  
+                INSERT INTO contatti (
+                    nome, cognome, data_nascita, indirizzo, codice_fiscale, cellulare, email, oggetto_mail, messaggio_mail, provincia, comune
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 ```
