@@ -349,3 +349,32 @@ Content-Type: application/json
 ```
 
 ***Ricordiamoci sempre di aggiungere "Content-Type: application/json", altrimenti il nostro codice non saprà come gestire il formato dei nostri dati e andrà in crash.***
+
+
+### FACCIAMO PARTIRE IL NOSTRO PROGETTO
+
+Arrivati a questo punto, possiamo andare finalmente a far partire il nostro progetto!
+
+***Assicuramioci che le directory siano composte così:***
+
+```
+.
+├── assets
+│   ├── photo.jpg (solo se usiamo gli allegati nella mail)
+├──data
+│   ├── database.db (verrà creato in automatico dal programma)
+├──json
+│   ├── gi_comuni.json
+│   ├── province.json
+├──node_modules (che verranno scaricati con npm i)
+├──public
+│   ├── index.html
+├──src
+│   ├── index.js
+├──test
+│   ├── test.http
+├── .env (chiavi private e dati accesso)
+├── .package.json 
+├── .package-lock.json 
+└── README.md (il file che state leggendo ora)
+```
