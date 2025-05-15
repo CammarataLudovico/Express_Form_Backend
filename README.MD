@@ -378,3 +378,5 @@ Arrivati a questo punto, possiamo andare finalmente a far partire il nostro prog
 ├── .package-lock.json 
 └── README.md (il file che state leggendo ora)
 ```
+
+Fatto questo, possiamo far partire il tutto scrivendo ***npm start*** nel cmd, e il server partirà!
