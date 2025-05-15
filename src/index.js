@@ -49,15 +49,6 @@ transporter.verify((error, success) => {
     }
 });
 
-
-// DA FINIRE, PERCHè MANDA IN CRASH IL PROGRAMMA
-/*db.run(saveDataSQL, params, function (err) {
-        if (err) {
-            console.log(err)
-            return res.status(500).send("Errore nel salvataggio dei dati nel DB")
-        }
-    });*/
-
 // NUOVO ENDPOINT: Chiamata POST per il form di registrazione utente
 server.post('/form-data', async (req, res) => {
     try {
@@ -70,10 +61,10 @@ server.post('/form-data', async (req, res) => {
         const {
             nome,
             cognome,
-            cellulare,
             data_nascita,
             indirizzo,
             cf,
+            cellulare,
             email,
             oggetto,
             messaggio,
@@ -91,10 +82,10 @@ server.post('/form-data', async (req, res) => {
         const params = [
             nome,
             cognome,
-            cellulare,
             data_nascita,
             indirizzo,
             cf,
+            cellulare,
             email,
             oggetto,
             messaggio,
@@ -105,7 +96,6 @@ server.post('/form-data', async (req, res) => {
         // Andiamo a salvare i dati nel db
 
         const saveDataSQL = `
-            INSERT INTO contatti (
                 INSERT INTO contatti (
                     nome, cognome, data_nascita, indirizzo, codice_fiscale, cellulare, email, oggetto_mail, messaggio_mail, provincia, comune
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -139,6 +129,14 @@ server.post('/form-data', async (req, res) => {
                 path: path.join(__dirname, '../assets', 'test.jpg' )
             }*/
         };
+
+        // Gestione errori salvataggio dei dati nel database
+        db.run(saveDataSQL, params, function (err) {
+            if (err) {
+                console.error("Errore DB:", err);
+                return res.status(500).send("Errore nel salvataggio dei dati nel database");
+            }
+        });
         
 
         // Invia l'email
@@ -147,7 +145,7 @@ server.post('/form-data', async (req, res) => {
         // Risposta al client
         res.json({ 
             success: true, 
-            message: 'Dati inviati con successo al bot Telegram' 
+            message: 'Dati salvati con successo nel database e mail inviata!' 
         });
     } catch (error) {
         console.error('Errore nell\'invio dei dati:', error);
@@ -159,7 +157,6 @@ server.post('/form-data', async (req, res) => {
 });
 
 db.serialize(() => {
-    // da finire
     db.run(`CREATE TABLE IF NOT EXISTS contatti (
         contact_id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
