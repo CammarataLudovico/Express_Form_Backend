@@ -247,10 +247,10 @@ Ora andremo ad eseguire una **destrutturazione** delle variabili che ci servano 
    const {
             nome,
             cognome,
-            cellulare,
             data_nascita,
             indirizzo,
             cf,
+            cellulare,
             email,
             oggetto,
             messaggio,
@@ -267,10 +267,10 @@ Ora andremo ad eseguire un passaggio per evitare **SQL Injection**, andiamo a sa
 const params = [
             nome,
             cognome,
-            cellulare,
             data_nascita,
             indirizzo,
             cf,
+            cellulare,
             email,
             oggetto,
             messaggio,
@@ -291,3 +291,61 @@ const saveDataSQL = `
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 ```
+
+### GESTIONE ERRORI NEL SALVATAGGIO DEI DATI
+
+Ora andiamo a creare la funzione con cui gestiremo gli errori di salvataggio dei dati  nel nostro database, così da fare debugging e capire cosa stiamo sbagliando.
+
+```js
+db.run(saveDataSQL, params, function (err) {
+            if (err) {
+                console.error("Errore DB:", err);
+                return res.status(500).send("Errore nel salvataggio dei dati nel database");
+            }
+        });
+```
+
+### INVIO RISPOSTA CLIENT 
+
+Ora andiamo a definire la risposta che daremo al client, per assicurarci che l'invio venga recepito anche dalla sua parte.
+
+```js
+// Risposta al client
+        res.json({ 
+            success: true, 
+            message: 'Dati salvati con successo nel database e mail inviata!' 
+        });
+    } catch (error) {
+        console.error('Errore nell\'invio dei dati:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+```
+
+### CREAZIONE FILE DI TEST, CON RICHIESTA HTTP
+
+Ora andiamo a crearci un file chiamato **"test.http"**, dentro alla cartella **"test"** che andiamo a crearci, così da testare la richiesta post senza dover sempre scrivere dentro la nostra form, ma facciamo tutto direttamente da Visual Studio Code.
+
+```http
+POST http://localhost:3000/form-data
+Content-Type: application/json
+
+{
+    "nome" : "Ludovico",
+    "cognome" : "Cammarata",
+    "data_nascita" : "2004-03-12",
+    "indirizzo" : "Via salamella",
+    "cf" : "MLVPVM37L48B769G",
+    "cellulare": "3200597845",
+    "email" : "ludovico.cammarata.24@stud.itsaltoadriatico.it",
+    "oggetto" : "Info sul prodotto",
+    "messaggio" : "Prova messaggio",
+    "provincia" : "VE",
+    "comune_nome" : "Gruaro"
+}
+```
+
+***Ricordiamoci sempre di aggiungere "Content-Type: application/json", altrimenti il nostro codice non saprà come gestire il formato dei nostri dati e andrà in crash.***
