@@ -1,0 +1,18 @@
+### Aggiungi al README
+
+POST http://localhost:3000/form-data
+Content-Type: application/json
+
+{
+    "nome" : "test",
+    "cognome" : "test",
+    "data_nascita" : "1950-02-02",
+    "indirizzo" : "test",
+    "cf" : "MLVPVM37L48B769G",
+    "cellulare": "11234567890",
+    "email" : "x",
+    "oggetto" : "test",
+    "messaggio" : "test",
+    "provincia" : "VE",
+    "comune_nome" : "Venezia"
+}
